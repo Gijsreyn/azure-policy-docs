@@ -3,7 +3,7 @@ using AzurePolicyDocs.Cli.Commands;
 
 namespace AzurePolicyDocs.Cli;
 
-/// <summary>Entry point of the <c>policydocs</c> tool.</summary>
+/// <summary>Entry point of the <c>azurepolicydocs</c> tool.</summary>
 public static class Program
 {
     public static async Task<int> Main(string[] args)

@@ -47,7 +47,7 @@ Resource types and aliases are convenience summaries. Without resource provider 
 `src/AzurePolicyDocs.Tests` uses xUnit and FluentAssertions.
 
 - Parser and model builder tests pin behavior on fixtures under `Fixtures/`.
-- Renderer tests compare built-in template output to golden files under `Fixtures/Expected/`. When you change a template on purpose, regenerate the golden file with `policydocs generate <fixture> --stdout` and review the diff.
+- Renderer tests compare built-in template output to golden files under `Fixtures/Expected/`. When you change a template on purpose, regenerate the golden file with `azurepolicydocs generate <fixture> --stdout` and review the diff.
 - CLI tests call `Program.RunAsync` in-process with string writers and temporary directories, so they exercise argument validation, output resolution, and exit codes without spawning processes.
 
 ## Adding a field to the model

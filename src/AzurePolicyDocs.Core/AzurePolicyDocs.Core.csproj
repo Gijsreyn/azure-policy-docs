@@ -2,7 +2,7 @@
   <PropertyGroup>
     <PackageId>AzurePolicyDocs.Core</PackageId>
     <RootNamespace>AzurePolicyDocs</RootNamespace>
-    <Description>Builds documentation models from Azure Policy definition and policy set definition JSON and renders them with Scriban templates. The library behind the policydocs CLI.</Description>
+    <Description>Builds documentation models from Azure Policy definition and policy set definition JSON and renders them with Scriban templates. The library behind the azurepolicydocs CLI.</Description>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>

@@ -15,7 +15,7 @@ internal sealed record CatalogArguments(
 );
 
 /// <summary>
-/// <c>policydocs catalog</c>: one index page that lists every matched policy and links to its documentation.
+/// <c>azurepolicydocs catalog</c>: one index page that lists every matched policy and links to its documentation.
 /// </summary>
 internal static class CatalogCommand
 {

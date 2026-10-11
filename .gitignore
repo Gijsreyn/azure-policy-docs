@@ -9,6 +9,10 @@ packages/
 *.nupkg
 *.snupkg
 
+## Node.js release tooling
+node_modules/
+npm-debug.log*
+
 ## Test results and coverage
 TestResults/
 coverage/

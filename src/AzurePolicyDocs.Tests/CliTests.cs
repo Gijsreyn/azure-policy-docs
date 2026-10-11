@@ -6,6 +6,12 @@ namespace AzurePolicyDocs.Tests;
 public class CliTests
 {
     [Fact]
+    public void CliAssembly_UsesAzurePolicyDocsCommandName()
+    {
+        typeof(AzurePolicyDocs.Cli.Program).Assembly.GetName().Name.Should().Be("azurepolicydocs");
+    }
+
+    [Fact]
     public async Task Generate_SingleInput_WritesMarkdownBesideInput()
     {
         using var temp = new TempDirectory();

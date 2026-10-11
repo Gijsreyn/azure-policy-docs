@@ -1,0 +1,26 @@
+{
+  "name": "azure-policy-docs-release-tools",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Development-only release tooling for the AzurePolicyDocs NuGet packages.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gijsreyn/azure-policy-docs.git"
+  },
+  "engines": {
+    "node": "^22.14.0 || >=24.10.0"
+  },
+  "scripts": {
+    "test": "node --test scripts/*.test.mjs",
+    "lint:commit": "commitlint",
+    "release": "semantic-release",
+    "release:preview": "semantic-release --dry-run"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "conventional-changelog-conventionalcommits": "9.3.1",
+    "semantic-release": "25.0.9"
+  }
+}

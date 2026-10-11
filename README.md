@@ -1,13 +1,13 @@
 # Azure Policy Docs
 
-`policydocs` is a .NET command-line tool that turns Azure Policy definition and policy set definition JSON into Markdown. It reads the same files you already keep in source control, including the `.jsonc` files that Enterprise Policy as Code (EPAC) uses, and renders them with a [Scriban](https://github.com/scriban/scriban) template. The built-in templates produce a page per policy with its effect, parameters, targeted resource types, remediation roles, and the full policy rule. Bring your own template when your repository needs a different layout.
+`azurepolicydocs` is a .NET command-line tool that turns Azure Policy definition and policy set definition JSON into Markdown. It reads the same files you already keep in source control, including the `.jsonc` files that Enterprise Policy as Code (EPAC) uses, and renders them with a [Scriban](https://github.com/scriban/scriban) template. The built-in templates produce a page per policy with its effect, parameters, targeted resource types, remediation roles, and the full policy rule. Bring your own template when your repository needs a different layout.
 
 The command shape follows `bicep docs generate`: one file or a glob pattern in, Markdown beside the input or under an output directory out, custom values passed on the command line.
 
 ```text
-policydocs generate ./Definitions/policyDefinitions/allowed-locations.json
-policydocs generate --pattern "./Definitions/**/*.json*" --outdir ./docs/policies
-policydocs catalog  --pattern "./Definitions/**/*.json*" --outfile ./docs/policies/README.md --docs-dir ./docs/policies
+azurepolicydocs generate ./Definitions/policyDefinitions/allowed-locations.json
+azurepolicydocs generate --pattern "./Definitions/**/*.json*" --outdir ./docs/policies
+azurepolicydocs catalog --pattern "./Definitions/**/*.json*" --outfile ./docs/policies/README.md --docs-dir ./docs/policies
 ```
 
 Rendered examples for every file under [samples/](samples/) are in [samples/docs/](samples/docs/).
@@ -18,19 +18,19 @@ Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) or
 
 ```powershell
 dotnet tool install --global AzurePolicyDocs.Cli
-policydocs --help
+azurepolicydocs --help
 ```
 
 To render from your own code instead, reference the `AzurePolicyDocs.Core` package and use `PolicyDocumentationGenerator`.
 
 ## Commands
 
-### `policydocs generate`
+### `azurepolicydocs generate`
 
 Generates one Markdown document per input.
 
 ```text
-policydocs generate [<inputFile>] [options]
+azurepolicydocs generate [<inputFile>] [options]
 ```
 
 | Option | Description |
@@ -49,24 +49,24 @@ Without an output option, the document is written beside the input as `<input na
 
 With `--pattern`, a file that fails to parse is reported on stderr and skipped. The other files are still written and the command exits with 1.
 
-### `policydocs catalog`
+### `azurepolicydocs catalog`
 
 Writes one index page that lists every matched policy and links to its document.
 
 ```text
-policydocs catalog --pattern <glob> [--outfile <path> | --stdout] [--docs-dir <dir>] [template options]
+azurepolicydocs catalog --pattern <glob> [--outfile <path> | --stdout] [--docs-dir <dir>] [template options]
 ```
 
 The catalog defaults to `README.md` in the pattern root. Links point to a `.md` file beside each source file, or into `--docs-dir` when you generated the documents with `--outdir`. Set `custom.title` and `custom.description` to change the heading.
 
-### `policydocs template export`
+### `azurepolicydocs template export`
 
 Prints a built-in template, which is the easiest way to start a custom one.
 
 ```text
-policydocs template export --kind policyDefinition --outfile ./templates/policy.scriban
-policydocs template export --kind policySetDefinition
-policydocs template export --kind catalog
+azurepolicydocs template export --kind policyDefinition --outfile ./templates/policy.scriban
+azurepolicydocs template export --kind policySetDefinition
+azurepolicydocs template export --kind catalog
 ```
 
 ## What the built-in templates document
@@ -99,7 +99,7 @@ Owner: {{ custom.owner }}
 ```
 
 ```powershell
-policydocs generate .\policy.json --template .\templates\short.scriban --custom-template-value owner="Platform team"
+azurepolicydocs generate .\policy.json --template .\templates\short.scriban --custom-template-value owner="Platform team"
 ```
 
 Includes work relative to the input file's directory unless you pass `--include-root`. Rendered output always uses `\n` line endings and ends with exactly one newline.
@@ -141,7 +141,8 @@ To try the packed tool locally:
 
 ```powershell
 dotnet pack src/AzurePolicyDocs.Cli/AzurePolicyDocs.Cli.csproj --configuration Release --output ./artifacts
-dotnet tool install --global AzurePolicyDocs.Cli --add-source ./artifacts
+dotnet tool install --tool-path ./artifacts/tool --version 0.0.0-development AzurePolicyDocs.Cli --add-source ./artifacts
+./artifacts/tool/azurepolicydocs --help
 ```
 
 ### Formatting
@@ -158,13 +159,17 @@ dotnet csharpier check .
 
 CSharpier uses [.editorconfig](.editorconfig) for LF line endings, a 100-column print width, four-space C# indentation, and two-space XML/MSBuild indentation. It respects [.gitignore](.gitignore), so build outputs, packages, and test results are excluded. Templates and golden Markdown files are not reformatted.
 
-The [build workflow](.github/workflows/build.yml) checks formatting on both Windows and Linux for pull requests, pushes to `main`, and manual runs. The [release workflow](.github/workflows/release.yml) checks it before building or publishing. Unformatted files fail the workflow; CI never rewrites or commits code.
+The [build workflow](.github/workflows/build.yml) checks formatting on both Windows and Linux for pull requests and manual runs. The [release workflow](.github/workflows/release.yml) calls the same checks for pushes to `main` before publishing. Unformatted files fail the workflow; CI never rewrites or commits code.
 
 The SDK and language settings follow Microsoft Learn's [upgrade guidance](https://learn.microsoft.com/dotnet/core/install/upgrade) and [C# language version guidance](https://learn.microsoft.com/dotnet/csharp/language-reference/configure-language-version).
 
 ## Releasing
 
-Pushing a tag such as `v0.2.0` runs [release.yml](.github/workflows/release.yml), which checks formatting, builds with that version, runs the tests, packs both packages, pushes them to NuGet.org with the `NUGET_API_KEY` repository secret, and creates a GitHub release. Before the first release, replace the author and repository placeholders in [Directory.Build.props](Directory.Build.props) and [LICENSE](LICENSE).
+[semantic-release](https://github.com/semantic-release/semantic-release) publishes from `main` after the Windows and Linux build checks pass. Conventional Commit messages select the next shared version for `AzurePolicyDocs.Core` and `AzurePolicyDocs.Cli`: `fix:` and `perf:` produce a patch, `feat:` produces a minor, and breaking changes produce a major release.
+
+The [release workflow](.github/workflows/release.yml) rebuilds and packs with that version, pushes both packages to NuGet.org using [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing), and creates a version tag and a [GitHub release](https://github.com/Gijsreyn/azure-policy-docs/releases) with generated notes and package downloads. GitHub's OIDC identity is exchanged for a temporary API key, so no long-lived NuGet API key is stored. It doesn't publish to npm or commit version changes back to the repository. Local builds use `0.0.0-development`.
+
+For contributor instructions and commit conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

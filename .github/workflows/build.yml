@@ -1,11 +1,10 @@
 name: Build
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -52,8 +51,12 @@ jobs:
       - name: Smoke test the packed tool
         shell: pwsh
         run: |
-          dotnet tool install --global AzurePolicyDocs.Cli --add-source ./artifacts
-          policydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout | Select-Object -First 5
+          dotnet tool install --tool-path ./artifacts/tool --add-source ./artifacts --version 0.0.0-development AzurePolicyDocs.Cli
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./artifacts/tool/azurepolicydocs --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./artifacts/tool/azurepolicydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload test results
         if: always()
@@ -68,3 +71,22 @@ jobs:
         with:
           name: packages
           path: ./artifacts/*.nupkg
+
+  release-tooling:
+    name: Release tooling tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          check-latest: true
+          cache: npm
+
+      - name: Install release tooling
+        run: npm ci
+
+      - name: Test release rules and NuGet publishing
+        run: npm test
