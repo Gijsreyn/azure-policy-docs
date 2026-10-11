@@ -159,18 +159,6 @@ dotnet csharpier check .
 
 CSharpier uses [.editorconfig](.editorconfig) for LF line endings, a 100-column print width, four-space C# indentation, and two-space XML/MSBuild indentation. It respects [.gitignore](.gitignore), so build outputs, packages, and test results are excluded. Templates and golden Markdown files are not reformatted.
 
-The [build workflow](.github/workflows/build.yml) checks formatting on both Windows and Linux for pull requests and manual runs. The [release workflow](.github/workflows/release.yml) calls the same checks for pushes to `main` before publishing. Unformatted files fail the workflow; CI never rewrites or commits code.
-
-The SDK and language settings follow Microsoft Learn's [upgrade guidance](https://learn.microsoft.com/dotnet/core/install/upgrade) and [C# language version guidance](https://learn.microsoft.com/dotnet/csharp/language-reference/configure-language-version).
-
-## Releasing
-
-[semantic-release](https://github.com/semantic-release/semantic-release) publishes from `main` after the Windows and Linux build checks pass. Conventional Commit messages select the next shared version for `AzurePolicyDocs.Core` and `AzurePolicyDocs.Cli`: `fix:` and `perf:` produce a patch, `feat:` produces a minor, and breaking changes produce a major release.
-
-The [release workflow](.github/workflows/release.yml) rebuilds and packs with that version, pushes both packages to NuGet.org using [Trusted Publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing), and creates a version tag and a [GitHub release](https://github.com/Gijsreyn/azure-policy-docs/releases) with generated notes and package downloads. GitHub's OIDC identity is exchanged for a temporary API key, so no long-lived NuGet API key is stored. It doesn't publish to npm or commit version changes back to the repository. Local builds use `0.0.0-development`.
-
-For contributor instructions and commit conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
