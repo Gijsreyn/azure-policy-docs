@@ -15,7 +15,7 @@ internal sealed record GenerateArguments(
 );
 
 /// <summary>
-/// <c>policydocs generate</c>: one Markdown file per policy definition or policy set definition.
+/// <c>azurepolicydocs generate</c>: one Markdown file per policy definition or policy set definition.
 /// </summary>
 internal static class GenerateCommand
 {

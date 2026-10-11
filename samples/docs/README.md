@@ -1,6 +1,6 @@
 # Sample policy catalog
 
-Generated from the files under samples/ with policydocs.
+Generated from the files under samples/ with azurepolicydocs.
 
 4 policy definition(s) and 2 policy set definition(s).
 

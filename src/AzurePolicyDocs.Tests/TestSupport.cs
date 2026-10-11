@@ -22,7 +22,7 @@ internal sealed class TempDirectory : IDisposable
     {
         Path = System.IO.Path.Combine(
             System.IO.Path.GetTempPath(),
-            "policydocs-tests",
+            "azurepolicydocs-tests",
             Guid.NewGuid().ToString("n")
         );
         Directory.CreateDirectory(Path);

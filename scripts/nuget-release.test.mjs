@@ -7,7 +7,7 @@ import { test } from "node:test";
 import { prepare, publish, verifyRelease } from "./nuget-release.mjs";
 
 function fixture(t) {
-    const cwd = mkdtempSync(resolve(tmpdir(), "policydocs-release-"));
+    const cwd = mkdtempSync(resolve(tmpdir(), "azurepolicydocs-release-"));
     t.after(() => rmSync(cwd, { recursive: true, force: true }));
     return {
         cwd,
@@ -29,11 +29,21 @@ function packages(context) {
 test("verifyRelease requires a key only for a real release", (t) => {
     const context = fixture(t);
     context.env = {};
-    assert.throws(() => verifyRelease({}, context), /NUGET_API_KEY/);
+    assert.throws(() => verifyRelease({}, context), (error) => {
+        assert.match(error.message, /NuGet\/login did not provide NUGET_API_KEY/);
+        assert.match(error.message, /Trusted Publishing policy/);
+        assert.match(error.message, /NUGET_USER/);
+        assert.match(error.message, /id-token: write/);
+        return true;
+    });
     context.env.NUGET_API_KEY = "   ";
     assert.throws(() => verifyRelease({}, context), /NUGET_API_KEY/);
     context.options.dryRun = true;
     assert.doesNotThrow(() => verifyRelease({}, context));
+});
+
+test("verifyRelease accepts the temporary key supplied by NuGet login", (t) => {
+    assert.doesNotThrow(() => verifyRelease({}, fixture(t)));
 });
 
 test("a preview never builds, removes artifacts, or publishes", (t) => {

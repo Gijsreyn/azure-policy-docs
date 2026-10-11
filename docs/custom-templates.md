@@ -5,8 +5,8 @@ The built-in Markdown is a sensible default, not the only output. Any [Scriban](
 ## Start from the built-in template
 
 ```powershell
-policydocs template export --kind policyDefinition --outfile ./templates/policy.scriban
-policydocs generate ./Definitions/policyDefinitions/allowed-locations.json --template ./templates/policy.scriban --stdout
+azurepolicydocs template export --kind policyDefinition --outfile ./templates/policy.scriban
+azurepolicydocs generate ./Definitions/policyDefinitions/allowed-locations.json --template ./templates/policy.scriban --stdout
 ```
 
 The same template is used for every input of a `generate` run. When a pattern mixes policy definitions and policy sets, branch on `policy.kind`:
@@ -24,7 +24,7 @@ The same template is used for every input of a `generate` run. When a pattern mi
 `include` paths resolve against the include root, which is the input file's directory unless you pass `--include-root`. Keep shared fragments in one directory and point the root at it:
 
 ```powershell
-policydocs generate --pattern "./Definitions/**/*.json*" --outdir ./docs --template ./templates/policy.scriban --include-root ./templates
+azurepolicydocs generate --pattern "./Definitions/**/*.json*" --outdir ./docs --template ./templates/policy.scriban --include-root ./templates
 ```
 
 ## Custom values
@@ -32,7 +32,7 @@ policydocs generate --pattern "./Definitions/**/*.json*" --outdir ./docs --templ
 Values are strings and live under `custom`:
 
 ```powershell
-policydocs generate ./policy.json --stdout `
+azurepolicydocs generate ./policy.json --stdout `
   --custom-template-value owner="Platform team" `
   --custom-template-value-file-path ./docs/values.json
 ```
@@ -84,7 +84,7 @@ A table cell breaks on `|` and on line breaks. The built-in templates define `md
 [samples/templates/compact.scriban](../samples/templates/compact.scriban) renders a single bullet list per policy and includes a header fragment. Try it:
 
 ```powershell
-policydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout `
+azurepolicydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout `
   --template ./samples/templates/compact.scriban --include-root ./samples/templates `
   --custom-template-value owner="Platform team"
 ```

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { analyzeCommits } from "@semantic-release/commit-analyzer";
 import { generateNotes } from "@semantic-release/release-notes-generator";
@@ -92,4 +93,22 @@ test("only main releases, NuGet publishes before GitHub, and npm is disabled", (
     assert.equal(github.failCommentCondition, false);
     assert.equal(github.releasedLabels, false);
     assert.equal(github.assets[0].path, "artifacts/release/*.nupkg");
+});
+
+test("release authentication uses a temporary NuGet key and skips previews", () => {
+    const workflow = readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8")
+        .replaceAll("\r\n", "\n");
+    const publishJob = workflow.slice(workflow.indexOf("\n  publish:"));
+    const loginStep = publishJob.match(/      - name: Authenticate to NuGet.org with Trusted Publishing\n([\s\S]*?)(?=\n      - name:)/)?.[1];
+
+    assert.ok(loginStep, "The NuGet login step must precede the release step");
+    assert.match(publishJob, /    permissions:\n      contents: write\n      id-token: write/);
+    assert.equal((workflow.match(/id-token: write/g) ?? []).length, 1);
+    assert.match(loginStep, /if: github\.event_name != 'workflow_dispatch' \|\| !inputs\.dry-run/);
+    assert.match(loginStep, /id: nuget-login\n/);
+    assert.match(loginStep, /uses: NuGet\/login@v1\n/);
+    assert.match(loginStep, /user: \$\{\{ secrets\.NUGET_USER \}\}/);
+    assert.match(publishJob, /NUGET_API_KEY: \$\{\{ steps\.nuget-login\.outputs\.NUGET_API_KEY \}\}/);
+    assert.doesNotMatch(workflow, /secrets\.NUGET_API_KEY/);
+    assert.ok(publishJob.indexOf("run: npm ci") < publishJob.indexOf("id: nuget-login"));
 });

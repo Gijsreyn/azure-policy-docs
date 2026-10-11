@@ -53,7 +53,9 @@ jobs:
         run: |
           dotnet tool install --tool-path ./artifacts/tool --add-source ./artifacts --version 0.0.0-development AzurePolicyDocs.Cli
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          ./artifacts/tool/policydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout
+          ./artifacts/tool/azurepolicydocs --help
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          ./artifacts/tool/azurepolicydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Upload test results

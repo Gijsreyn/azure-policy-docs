@@ -43,7 +43,10 @@ function runDotnet(args, context) {
 export function verifyRelease(_pluginConfig, context) {
     releaseFiles(context);
     if (!context.options.dryRun && !context.env.NUGET_API_KEY?.trim()) {
-        throw new Error("Set the NUGET_API_KEY Actions secret with push rights for both packages.");
+        throw new Error(
+            "NuGet/login did not provide NUGET_API_KEY. Check the NuGet.org Trusted Publishing policy, " +
+            "the NUGET_USER Actions secret, and id-token: write permission."
+        );
     }
 }
 

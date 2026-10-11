@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <AssemblyName>policydocs</AssemblyName>
+    <AssemblyName>azurepolicydocs</AssemblyName>
     <RootNamespace>AzurePolicyDocs.Cli</RootNamespace>
     <PackageId>AzurePolicyDocs.Cli</PackageId>
     <Description>Command-line tool that generates Markdown documentation for Azure Policy definitions and policy set definitions from their JSON, using built-in or custom Scriban templates. Install with: dotnet tool install --global AzurePolicyDocs.Cli</Description>
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>policydocs</ToolCommandName>
+    <ToolCommandName>azurepolicydocs</ToolCommandName>
     <!-- Let the tool run on newer runtimes when .NET 10 is not installed. -->
     <RollForward>Major</RollForward>
     <InvariantGlobalization>true</InvariantGlobalization>

@@ -32,11 +32,11 @@ format. Historical headings don't establish Git tags or confirm NuGet publicatio
 
 ### Added
 
-- `policydocs generate`: Markdown documentation for policy definitions and policy set definitions, from a
+- `azurepolicydocs generate`: Markdown documentation for policy definitions and policy set definitions, from a
   single file or a glob pattern, written beside the input, under an output directory, to an exact path,
   or to stdout.
-- `policydocs catalog`: one index page that lists every matched policy and links to its documentation.
-- `policydocs template export`: prints a built-in Scriban template as the starting point for a custom one.
+- `azurepolicydocs catalog`: one index page that lists every matched policy and links to its documentation.
+- `azurepolicydocs template export`: prints a built-in Scriban template as the starting point for a custom one.
 - Built-in templates for policy definitions, policy set definitions, and the catalog.
 - Custom Scriban templates with `include` support and custom values from the command line or JSON files.
 - Effect analysis (literal, parameter, or expression), targeted resource types, field aliases, remediation

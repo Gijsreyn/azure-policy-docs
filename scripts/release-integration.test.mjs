@@ -11,7 +11,7 @@ import config from "../release.config.mjs";
 const require = createRequire(import.meta.url);
 
 function repository(t) {
-    const directory = mkdtempSync(resolve(tmpdir(), "policydocs-semantic-"));
+    const directory = mkdtempSync(resolve(tmpdir(), "azurepolicydocs-semantic-"));
     t.after(() => rmSync(directory, { recursive: true, force: true }));
     const remote = resolve(directory, "remote.git");
     const cwd = resolve(directory, "work");

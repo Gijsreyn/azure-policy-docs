@@ -5,7 +5,7 @@ using AzurePolicyDocs.Rendering;
 namespace AzurePolicyDocs.Cli.Commands;
 
 /// <summary>
-/// <c>policydocs template export</c>: prints a built-in template, the natural starting point for a custom one.
+/// <c>azurepolicydocs template export</c>: prints a built-in template, the natural starting point for a custom one.
 /// </summary>
 internal static class TemplateCommand
 {
