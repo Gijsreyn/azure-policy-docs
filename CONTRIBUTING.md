@@ -60,7 +60,7 @@ Use `npm ci` for normal development. When you intentionally update release depen
 
 The .NET build treats warnings as errors. CSharpier uses [.editorconfig](.editorconfig) and [.config/dotnet-tools.json](.config/dotnet-tools.json). Keep generated build output and installed dependencies out of commits.
 
-`npm test` checks version selection, release notes, PR-title rules, and the NuGet publishing steps. Integration tests use temporary local Git repositories. They don't publish packages or contact GitHub.
+`npm test` checks version selection, release notes, PR-title rules, NuGet publishing steps, and the workflow and package-documentation contracts. Integration tests use temporary local Git repositories. They don't publish packages or contact GitHub.
 
 Local packages use `0.0.0-development`. This placeholder in [Directory.Build.props](Directory.Build.props) is not the latest released version. The release process overrides `Version` when it builds and packs both packages.
 
@@ -114,7 +114,7 @@ Breaking changes also trigger a major release from a `0.x` baseline. For example
 1. Push your working branch and open a PR targeting `main`.
 1. Give the PR a Conventional Commit title. The **Conventional PR title** check runs again when you edit the title.
 1. Describe the problem, the change, and how you tested it. Link related issues and include migration steps for breaking changes.
-1. Wait for the Windows build, Linux build, release tooling tests, and PR-title check to pass. Fork PRs run without publishing secrets.
+1. Wait for the Windows build, Linux build, release tooling tests, PR-title check, and CodeQL analysis to pass. Fork PRs run without publishing secrets.
 1. Address review feedback. The maintainer uses **Squash and merge** and reviews the final commit message before merging.
 
 Individual work-in-progress commits don't need to be rewritten when the PR is squash merged. The final squash commit does need to follow the convention because semantic-release reads Git commit messages, not PR titles directly. Avoid release-skip and CI-skip markers, which can hide required changes or checks.
@@ -125,11 +125,6 @@ Don't add a version bump or a new section to [CHANGELOG.md](CHANGELOG.md). Descr
 
 Follow the [Microsoft Learn style and voice guidance](https://learn.microsoft.com/contribute/content/style-quick-start). Use sentence-case headings, short sentences, active voice, and numbered steps for tasks. Address the reader as "you". Explain what a change means for users, and provide a working example when it helps.
 
+The NuGet package guides live in [docs/packages/AzurePolicyDocs.Core/README.md](docs/packages/AzurePolicyDocs.Core/README.md) and [docs/packages/AzurePolicyDocs.Cli/README.md](docs/packages/AzurePolicyDocs.Cli/README.md). Update the relevant guide when the library API or CLI options change. [Directory.Build.targets](Directory.Build.targets) includes the guide selected by `PackageId` at the root of each package. Use absolute HTTPS links in these guides so they also work on NuGet.org. Package README changes reach NuGet.org with the next package version; they don't update versions already published.
+
 For more context, see [docs/architecture.md](docs/architecture.md), [docs/template-model.md](docs/template-model.md), and [docs/custom-templates.md](docs/custom-templates.md).
-
-
-
-
-
-
-

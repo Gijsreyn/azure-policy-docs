@@ -1,5 +1,12 @@
 # Azure Policy Docs
 
+[![Build](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/build.yml/badge.svg)](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/build.yml)
+[![CodeQL](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/codeql.yml)
+[![Release](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/Gijsreyn/azure-policy-docs/actions/workflows/release.yml)
+[![NuGet Core](https://img.shields.io/nuget/v/AzurePolicyDocs.Core?label=NuGet%20Core)](https://www.nuget.org/packages/AzurePolicyDocs.Core)
+[![NuGet CLI](https://img.shields.io/nuget/v/AzurePolicyDocs.Cli?label=NuGet%20CLI)](https://www.nuget.org/packages/AzurePolicyDocs.Cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 `azurepolicydocs` is a .NET command-line tool that turns Azure Policy definition and policy set definition JSON into Markdown. It reads the same files you already keep in source control, including the `.jsonc` files that Enterprise Policy as Code (EPAC) uses, and renders them with a [Scriban](https://github.com/scriban/scriban) template. The built-in templates produce a page per policy with its effect, parameters, targeted resource types, remediation roles, and the full policy rule. Bring your own template when your repository needs a different layout.
 
 The command shape follows `bicep docs generate`: one file or a glob pattern in, Markdown beside the input or under an output directory out, custom values passed on the command line.
@@ -11,6 +18,15 @@ azurepolicydocs catalog --pattern "./Definitions/**/*.json*" --outfile ./docs/po
 ```
 
 Rendered examples for every file under [samples/](samples/) are in [samples/docs/](samples/docs/).
+
+## Packages
+
+| Package | Use it for | Documentation |
+| :-- | :-- | :-- |
+| [AzurePolicyDocs.Core](https://www.nuget.org/packages/AzurePolicyDocs.Core) | Parse, inspect, and render policies from your own .NET application. | [Library guide](docs/packages/AzurePolicyDocs.Core/README.md) |
+| [AzurePolicyDocs.Cli](https://www.nuget.org/packages/AzurePolicyDocs.Cli) | Generate policy pages and catalogs from the command line. | [CLI guide and options](docs/packages/AzurePolicyDocs.Cli/README.md) |
+
+Each NuGet package includes its own guide rather than this repository overview.
 
 ## Install
 

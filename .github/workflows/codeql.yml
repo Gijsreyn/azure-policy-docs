@@ -1,0 +1,60 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  # Run on every PR so a required check is never skipped by a path filter.
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  analyze:
+    name: Analyze C#
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: csharp
+          build-mode: manual
+          queries: security-and-quality
+
+      - name: Restore
+        run: dotnet restore AzurePolicyDocs.sln
+
+      # Compile after initialization so CodeQL observes all projects, including tests.
+      # The Build workflow separately runs the tests on Windows and Linux.
+      - name: Build for analysis
+        run: dotnet build AzurePolicyDocs.sln --configuration Release --no-restore --no-incremental -p:UseSharedCompilation=false
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: /language:csharp
