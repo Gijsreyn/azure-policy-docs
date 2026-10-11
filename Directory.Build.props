@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <!-- Both NuGet packages take their version from here. Release tags (v0.1.0) override it in CI. -->
-    <Version>0.1.0</Version>
+    <!-- Local builds only. semantic-release overrides Version for both packages in CI. -->
+    <Version>0.0.0-development</Version>
 
     <!-- Use the target framework's supported C# version (.NET 10 defaults to C# 14). -->
     <TargetFramework>net10.0</TargetFramework>

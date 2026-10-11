@@ -1,0 +1,32 @@
+name: Pull request
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  title:
+    name: Conventional PR title
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          check-latest: true
+          cache: npm
+
+      - name: Install release tooling
+        run: npm ci
+
+      - name: Validate the squash commit title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        # Treat the title as data, never as part of the shell program.
+        run: printf '%s\n' "$PR_TITLE" | npm run lint:commit

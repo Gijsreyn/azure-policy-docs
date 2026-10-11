@@ -141,7 +141,8 @@ To try the packed tool locally:
 
 ```powershell
 dotnet pack src/AzurePolicyDocs.Cli/AzurePolicyDocs.Cli.csproj --configuration Release --output ./artifacts
-dotnet tool install --global AzurePolicyDocs.Cli --add-source ./artifacts
+dotnet tool install --tool-path ./artifacts/tool --version 0.0.0-development AzurePolicyDocs.Cli --add-source ./artifacts
+./artifacts/tool/policydocs --help
 ```
 
 ### Formatting
@@ -158,13 +159,17 @@ dotnet csharpier check .
 
 CSharpier uses [.editorconfig](.editorconfig) for LF line endings, a 100-column print width, four-space C# indentation, and two-space XML/MSBuild indentation. It respects [.gitignore](.gitignore), so build outputs, packages, and test results are excluded. Templates and golden Markdown files are not reformatted.
 
-The [build workflow](.github/workflows/build.yml) checks formatting on both Windows and Linux for pull requests, pushes to `main`, and manual runs. The [release workflow](.github/workflows/release.yml) checks it before building or publishing. Unformatted files fail the workflow; CI never rewrites or commits code.
+The [build workflow](.github/workflows/build.yml) checks formatting on both Windows and Linux for pull requests and manual runs. The [release workflow](.github/workflows/release.yml) calls the same checks for pushes to `main` before publishing. Unformatted files fail the workflow; CI never rewrites or commits code.
 
 The SDK and language settings follow Microsoft Learn's [upgrade guidance](https://learn.microsoft.com/dotnet/core/install/upgrade) and [C# language version guidance](https://learn.microsoft.com/dotnet/csharp/language-reference/configure-language-version).
 
 ## Releasing
 
-Pushing a tag such as `v0.2.0` runs [release.yml](.github/workflows/release.yml), which checks formatting, builds with that version, runs the tests, packs both packages, pushes them to NuGet.org with the `NUGET_API_KEY` repository secret, and creates a GitHub release. Before the first release, replace the author and repository placeholders in [Directory.Build.props](Directory.Build.props) and [LICENSE](LICENSE).
+[semantic-release](https://github.com/semantic-release/semantic-release) publishes from `main` after the Windows and Linux build checks pass. Conventional Commit messages select the next shared version for `AzurePolicyDocs.Core` and `AzurePolicyDocs.Cli`: `fix:` and `perf:` produce a patch, `feat:` produces a minor, and breaking changes produce a major release.
+
+The [release workflow](.github/workflows/release.yml) rebuilds and packs with that version, pushes both packages to NuGet.org using `NUGET_API_KEY`, and creates a version tag and a [GitHub release](https://github.com/Gijsreyn/azure-policy-docs/releases) with generated notes and package downloads. It doesn't publish to npm or commit version changes back to the repository. Local builds use `0.0.0-development`.
+
+For contributor instructions and commit conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
