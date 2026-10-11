@@ -1,0 +1,57 @@
+{
+    // Adds a costCenter tag. The effect is computed so one list parameter can switch the policy off.
+    "name": "modify-costcenter-tag",
+    "type": "Microsoft.Authorization/policyDefinitions",
+    "properties": {
+        "displayName": "Add the costCenter tag to resource groups",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "Adds or replaces the costCenter tag on resource groups that lack it.",
+        "metadata": {
+            "version": "2.0.0",
+            "category": "Tags",
+            "deprecated": "false",
+        },
+        "parameters": {
+            "tagValue": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Tag value",
+                    "description": "Value written to the costCenter tag."
+                },
+                "defaultValue": "unassigned"
+            },
+            "enabledFeatures": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Enabled features",
+                    "description": "Include 'tags' to enable this policy."
+                },
+                "defaultValue": [ "tags" ]
+            },
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    { "field": "type", "equals": "Microsoft.Resources/subscriptions/resourceGroups" },
+                    { "field": "tags['costCenter']", "exists": "false" }, /* block comment */
+                ]
+            },
+            "then": {
+                "effect": "[if(contains(parameters('enabledFeatures'), 'tags'), 'Modify', 'Disabled')]",
+                "details": {
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/4a9ae827-6dc8-4573-8ac7-8239d42aa03f"
+                    ],
+                    "operations": [
+                        {
+                            "operation": "addOrReplace",
+                            "field": "tags['costCenter']",
+                            "value": "[parameters('tagValue')]"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

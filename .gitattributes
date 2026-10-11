@@ -1,0 +1,13 @@
+# Normalize line endings so golden files and templates compare byte-for-byte on every OS.
+* text=auto eol=lf
+
+*.md text eol=lf
+*.scriban text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.cs text eol=lf
+*.yml text eol=lf
+
+*.png binary
+*.gif binary
+*.ico binary

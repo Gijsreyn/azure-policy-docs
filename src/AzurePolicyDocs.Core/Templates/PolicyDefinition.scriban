@@ -1,0 +1,176 @@
+{{~ func md_cell(value) ~}}
+{{~ if value == null ~}}
+{{~ ret "" ~}}
+{{~ end ~}}
+{{~ ret (value | string.replace "\r\n" " " | string.replace "\n" " " | string.replace "|" "\\|") ~}}
+{{~ end ~}}
+{{~ func code_list(values) ~}}
+{{~ if values == null || values.size == 0 ~}}
+{{~ ret "" ~}}
+{{~ end ~}}
+{{~ result = "" ~}}
+{{~ for value in values ~}}
+{{~ result = result + "`" + (md_cell value) + "`" ~}}
+{{~ if !for.last ~}}
+{{~ result = result + ", " ~}}
+{{~ end ~}}
+{{~ end ~}}
+{{~ ret result ~}}
+{{~ end ~}}
+# {{ policy.displayName ?? policy.name }}
+{{~ if policy.description ~}}
+
+{{ policy.description }}
+{{~ end ~}}
+
+| Property | Value |
+| :-- | :-- |
+| Name | `{{ policy.name }}` |
+| Type | Policy definition |
+{{~ if policy.policyType ~}}
+| Policy type | {{ policy.policyType }} |
+{{~ end ~}}
+{{~ if policy.mode ~}}
+| Mode | `{{ policy.mode }}` |
+{{~ end ~}}
+{{~ if policy.category ~}}
+| Category | {{ md_cell policy.category }} |
+{{~ end ~}}
+{{~ if policy.version ~}}
+| Version | `{{ policy.version }}` |
+{{~ end ~}}
+{{~ if policy.preview ~}}
+| Preview | Yes |
+{{~ end ~}}
+{{~ if policy.deprecated ~}}
+| Deprecated | Yes |
+{{~ end ~}}
+
+## Navigation
+
+- [Effect](#effect)
+- [Resource types](#resource-types)
+- [Parameters](#parameters)
+{{~ if policy.fieldAliases.size > 0 ~}}
+- [Field aliases](#field-aliases)
+{{~ end ~}}
+- [Policy rule](#policy-rule)
+
+## Effect
+{{~ if policy.effect == null ~}}
+
+_The policy rule has no `then.effect`._
+{{~ else if policy.effect.kind == "parameter" ~}}
+
+The effect is set by the `{{ policy.effect.parameterName }}` parameter.
+{{~ if policy.effect.defaultEffect ~}}
+
+- Default: `{{ policy.effect.defaultEffect }}`
+{{~ end ~}}
+{{~ if policy.effect.allowedEffects.size > 0 ~}}
+- Allowed: {{ code_list policy.effect.allowedEffects }}
+{{~ end ~}}
+{{~ else if policy.effect.kind == "literal" ~}}
+
+The effect is fixed to `{{ policy.effect.raw }}`.
+{{~ else ~}}
+
+The effect is computed by an expression{{ if policy.effect.allowedEffects.size > 0 }} that resolves to one of {{ code_list policy.effect.allowedEffects }}{{ end }}:
+
+```
+{{ policy.effect.raw }}
+```
+{{~ end ~}}
+{{~ if policy.effectDetails ~}}
+{{~ if policy.effectDetails.resourceType ~}}
+
+Related resource type: `{{ policy.effectDetails.resourceType }}`{{ if policy.effectDetails.hasExistenceCondition }}, checked with an existence condition{{ end }}{{ if policy.effectDetails.hasDeployment }}, deployed from a template when missing{{ end }}.
+{{~ end ~}}
+{{~ if policy.effectDetails.roleDefinitions.size > 0 ~}}
+
+Remediation needs these role assignments:
+
+| Role | Role definition ID |
+| :-- | :-- |
+{{~ for role in policy.effectDetails.roleDefinitions ~}}
+| {{ role.name ?? "Unknown role" }} | `{{ role.guid }}` |
+{{~ end ~}}
+{{~ end ~}}
+{{~ if policy.effectDetails.modifyOperations.size > 0 ~}}
+
+Modify operations:
+
+| Operation | Field |
+| :-- | :-- |
+{{~ for operation in policy.effectDetails.modifyOperations ~}}
+| `{{ operation.operation }}` | {{ if operation.field }}`{{ md_cell operation.field }}`{{ end }} |
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+
+## Resource types
+{{~ if policy.resourceTypes.size > 0 ~}}
+
+| Resource type |
+| :-- |
+{{~ for resourceType in policy.resourceTypes ~}}
+| `{{ resourceType }}` |
+{{~ end ~}}
+{{~ else ~}}
+
+_The policy rule has no explicit `type` condition._
+{{~ end ~}}
+
+## Parameters
+{{~ if policy.parameters.size > 0 ~}}
+
+| Name | Type | Required | Default | Allowed values | Description |
+| :-- | :-- | :-- | :-- | :-- | :-- |
+{{~ for parameter in policy.parameters ~}}
+| `{{ parameter.name }}` | `{{ parameter.type }}` | {{ if parameter.required }}Yes{{ else }}No{{ end }} | {{ if parameter.defaultValue != null }}{{ if parameter.defaultValueJson | string.contains "\n" }}See below{{ else }}`{{ md_cell parameter.defaultValue }}`{{ end }}{{ end }} | {{ code_list parameter.allowedValues }} | {{ md_cell parameter.description }} |
+{{~ end ~}}
+{{~ for parameter in policy.parameters ~}}
+{{~ multiline = parameter.defaultValueJson != null && (parameter.defaultValueJson | string.contains "\n") ~}}
+{{~ if multiline || parameter.strongType || parameter.assignPermissions || parameter.deprecated ~}}
+
+### `{{ parameter.name }}`
+{{~ if parameter.strongType ~}}
+
+- Strong type: `{{ parameter.strongType }}`
+{{~ end ~}}
+{{~ if parameter.assignPermissions ~}}
+
+- Assign permissions: Yes
+{{~ end ~}}
+{{~ if parameter.deprecated ~}}
+
+- Deprecated: Yes
+{{~ end ~}}
+{{~ if multiline ~}}
+
+- Default value:
+
+{{ parameter.defaultValueFence }}json
+{{ parameter.defaultValueJson }}
+{{ parameter.defaultValueFence }}
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+{{~ else ~}}
+
+_This policy definition declares no parameters._
+{{~ end ~}}
+{{~ if policy.fieldAliases.size > 0 ~}}
+
+## Field aliases
+
+{{~ for alias in policy.fieldAliases ~}}
+- `{{ alias }}`
+{{~ end ~}}
+{{~ end ~}}
+
+## Policy rule
+
+{{ policy.policyRuleFence }}json
+{{ policy.policyRuleJson }}
+{{ policy.policyRuleFence }}

@@ -1,0 +1,28 @@
+{{~ include "_header.md" ~}}
+## {{ policy.displayName ?? policy.name }}
+{{~ if policy.description ~}}
+
+{{ policy.description }}
+{{~ end ~}}
+
+- Name: `{{ policy.name }}`
+{{~ if policy.category ~}}
+- Category: {{ policy.category }}
+{{~ end ~}}
+{{~ if policy.kind == "policyDefinition" ~}}
+{{~ if policy.effect ~}}
+- Effect: {{ if policy.effect.kind == "parameter" }}`{{ policy.effect.defaultEffect ?? "set at assignment" }}` via `{{ policy.effect.parameterName }}`{{ else }}`{{ policy.effect.raw }}`{{ end }}
+{{~ end ~}}
+{{~ if policy.resourceTypes.size > 0 ~}}
+- Resource types: {{ for type in policy.resourceTypes }}`{{ type }}`{{ if !for.last }}, {{ end }}{{ end }}
+{{~ end ~}}
+{{~ else ~}}
+- Policies: {{ policy.policyCount }}
+{{~ end ~}}
+{{~ if policy.parameters.size > 0 ~}}
+- Parameters: {{ for parameter in policy.parameters }}`{{ parameter.name }}`{{ if parameter.required }} (required){{ end }}{{ if !for.last }}, {{ end }}{{ end }}
+{{~ end ~}}
+{{~ if custom.owner ~}}
+
+Owner: {{ custom.owner }}
+{{~ end ~}}

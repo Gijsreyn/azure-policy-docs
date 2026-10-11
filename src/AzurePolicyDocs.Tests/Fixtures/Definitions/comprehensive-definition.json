@@ -1,0 +1,164 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Azure/enterprise-azure-policy-as-code/main/Schemas/policy-definition-schema.json",
+  "name": "deploy-storage-diagnostics",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "properties": {
+    "displayName": "Deploy diagnostic settings for storage accounts | preview",
+    "description": "Deploys a diagnostic setting that routes storage account logs and metrics to a Log Analytics workspace.\nThe second line exercises multi-line descriptions.",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "version": "1.2.0",
+    "metadata": {
+      "version": "1.1.0",
+      "category": "Monitoring",
+      "preview": true,
+      "owner": "platform-team"
+    },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy."
+        },
+        "allowedValues": [
+          "DeployIfNotExists",
+          "AuditIfNotExists",
+          "Disabled"
+        ],
+        "defaultValue": "DeployIfNotExists"
+      },
+      "logAnalytics": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Log Analytics workspace",
+          "description": "Resource ID of the workspace. The portal creates the role assignment on it.",
+          "strongType": "omsWorkspace",
+          "assignPermissions": true
+        }
+      },
+      "retentionDays": {
+        "type": "Integer",
+        "metadata": {
+          "displayName": "Retention in days",
+          "description": "Days to keep the logs."
+        },
+        "defaultValue": 30
+      },
+      "enabledCategories": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Log categories",
+          "description": "Categories to enable."
+        },
+        "defaultValue": [
+          "StorageRead",
+          "StorageWrite",
+          "StorageDelete"
+        ]
+      },
+      "metricsEnabled": {
+        "type": "Boolean",
+        "metadata": {
+          "displayName": "Metrics enabled",
+          "description": "Whether metrics are collected | too."
+        },
+        "defaultValue": true
+      },
+      "settings": {
+        "type": "Object",
+        "metadata": {
+          "displayName": "Settings",
+          "description": "Free-form settings."
+        },
+        "defaultValue": {
+          "profileName": "setByPolicy",
+          "tags": {
+            "env": "prod"
+          }
+        }
+      },
+      "legacyOption": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Legacy option",
+          "description": "No longer used.",
+          "deprecated": true
+        },
+        "defaultValue": ""
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Storage/storageAccounts"
+          },
+          {
+            "field": "kind",
+            "in": [
+              "StorageV2",
+              "BlobStorage"
+            ]
+          },
+          {
+            "field": "tags['exclude']",
+            "exists": "false"
+          },
+          {
+            "field": "Microsoft.Storage/storageAccounts/supportsHttpsTrafficOnly",
+            "equals": "true"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "type",
+                "in": [
+                  "Microsoft.Storage/storageAccounts/blobServices",
+                  "[parameters('settings')]"
+                ]
+              },
+              {
+                "field": "type",
+                "like": "Microsoft.Storage/*"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "type": "Microsoft.Insights/diagnosticSettings",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+            "/providers/Microsoft.Authorization/roleDefinitions/00000000-1111-2222-3333-444444444444"
+          ],
+          "existenceCondition": {
+            "allOf": [
+              {
+                "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+                "equals": "[parameters('logAnalytics')]"
+              },
+              {
+                "field": "Microsoft.Insights/diagnosticSettings/logs.enabled",
+                "equals": "true"
+              }
+            ]
+          },
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "resources": []
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

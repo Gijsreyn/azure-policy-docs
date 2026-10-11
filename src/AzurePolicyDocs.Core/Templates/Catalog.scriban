@@ -1,0 +1,59 @@
+{{~ func md_cell(value) ~}}
+{{~ if value == null ~}}
+{{~ ret "" ~}}
+{{~ end ~}}
+{{~ ret (value | string.replace "\r\n" " " | string.replace "\n" " " | string.replace "|" "\\|") ~}}
+{{~ end ~}}
+{{~ func code_list(values) ~}}
+{{~ if values == null || values.size == 0 ~}}
+{{~ ret "" ~}}
+{{~ end ~}}
+{{~ result = "" ~}}
+{{~ for value in values ~}}
+{{~ result = result + "`" + (md_cell value) + "`" ~}}
+{{~ if !for.last ~}}
+{{~ result = result + ", " ~}}
+{{~ end ~}}
+{{~ end ~}}
+{{~ ret result ~}}
+{{~ end ~}}
+{{~ func entry_link(entry) ~}}
+{{~ label = md_cell (entry.displayName ?? entry.name) ~}}
+{{~ if entry.documentationPath ~}}
+{{~ ret "[" + label + "](" + entry.documentationPath + ")" ~}}
+{{~ end ~}}
+{{~ ret label ~}}
+{{~ end ~}}
+# {{ custom.title ?? "Azure Policy catalog" }}
+{{~ if custom.description ~}}
+
+{{ custom.description }}
+{{~ end ~}}
+
+{{ catalog.policyDefinitions.size }} policy definition(s) and {{ catalog.policySetDefinitions.size }} policy set definition(s).
+
+## Policy definitions
+{{~ if catalog.policyDefinitions.size > 0 ~}}
+
+| Policy | Category | Mode | Effects | Description |
+| :-- | :-- | :-- | :-- | :-- |
+{{~ for entry in catalog.policyDefinitions ~}}
+| {{ entry_link entry }} | {{ md_cell entry.category }} | {{ if entry.mode }}`{{ entry.mode }}`{{ end }} | {{ code_list entry.allowedEffects }} | {{ md_cell entry.description }} |
+{{~ end ~}}
+{{~ else ~}}
+
+_No policy definitions were found._
+{{~ end ~}}
+
+## Policy set definitions
+{{~ if catalog.policySetDefinitions.size > 0 ~}}
+
+| Policy set | Category | Policies | Description |
+| :-- | :-- | :-- | :-- |
+{{~ for entry in catalog.policySetDefinitions ~}}
+| {{ entry_link entry }} | {{ md_cell entry.category }} | {{ entry.policyCount }} | {{ md_cell entry.description }} |
+{{~ end ~}}
+{{~ else ~}}
+
+_No policy set definitions were found._
+{{~ end ~}}

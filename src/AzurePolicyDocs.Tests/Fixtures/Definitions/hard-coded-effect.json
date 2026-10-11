@@ -1,0 +1,13 @@
+{
+  "displayName": "Public IP addresses are not allowed",
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "field": "type",
+      "like": "Microsoft.Network/publicIPAddresses"
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+}

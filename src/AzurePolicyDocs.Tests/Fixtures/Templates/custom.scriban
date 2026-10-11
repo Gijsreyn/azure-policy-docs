@@ -1,0 +1,7 @@
+{{ include "_header.md" }}
+# {{ policy.name }}
+
+Owner: {{ custom.owner }}
+Kind: {{ policy.kind }}
+Parameters: {{ policy.parameters.size }}
+{{ include "shared/_footer.md" }}

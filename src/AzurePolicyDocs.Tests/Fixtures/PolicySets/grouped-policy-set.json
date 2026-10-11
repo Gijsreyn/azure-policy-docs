@@ -1,0 +1,97 @@
+{
+  "name": "security-baseline",
+  "type": "Microsoft.Authorization/policySetDefinitions",
+  "properties": {
+    "displayName": "Security baseline",
+    "description": "Groups the controls every subscription must meet.",
+    "policyType": "Custom",
+    "version": "3.0.0",
+    "metadata": {
+      "version": "2.9.0",
+      "category": "Security"
+    },
+    "parameters": {
+      "storageEffect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Storage effect",
+          "description": "Effect for the storage policies."
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "allowedLocations": {
+        "type": "Array",
+        "metadata": {
+          "displayName": "Allowed locations",
+          "description": "Regions that may be used.",
+          "strongType": "location"
+        }
+      }
+    },
+    "policyDefinitionGroups": [
+      {
+        "name": "Storage",
+        "displayName": "Storage controls",
+        "category": "Data protection",
+        "description": "Controls for storage accounts."
+      },
+      {
+        "name": "Location",
+        "displayName": "Location controls",
+        "category": "Governance"
+      },
+      {
+        "name": "Unused",
+        "displayName": "No members"
+      }
+    ],
+    "policyDefinitions": [
+      {
+        "policyDefinitionReferenceId": "storage-https",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/404c3081-a854-4457-ae30-26a93ef643f9",
+        "definitionVersion": "1.*.*",
+        "groupNames": [
+          "Storage"
+        ],
+        "parameters": {
+          "effect": {
+            "value": "[parameters('storageEffect')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "allowed-locations",
+        "policyDefinitionId": "/providers/Microsoft.Authorization/policyDefinitions/e56962a6-4747-49cd-b67b-bf8b01975c4c",
+        "groupNames": [
+          "Location",
+          "Storage"
+        ],
+        "parameters": {
+          "listOfAllowedLocations": {
+            "value": "[parameters('allowedLocations')]"
+          }
+        }
+      },
+      {
+        "policyDefinitionReferenceId": "custom-tagging",
+        "policyDefinitionName": "rg-require-environment-tag",
+        "parameters": {
+          "tagName": {
+            "value": "environment"
+          },
+          "effect": {
+            "value": "Audit"
+          }
+        }
+      },
+      {
+        "policyDefinitionId": "/providers/Microsoft.Management/managementGroups/contoso/providers/Microsoft.Authorization/policyDefinitions/custom-no-reference-id"
+      }
+    ]
+  }
+}

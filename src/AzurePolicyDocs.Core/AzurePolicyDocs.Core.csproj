@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>AzurePolicyDocs.Core</PackageId>
+    <RootNamespace>AzurePolicyDocs</RootNamespace>
+    <Description>Builds documentation models from Azure Policy definition and policy set definition JSON and renders them with Scriban templates. The library behind the policydocs CLI.</Description>
+    <IsPackable>true</IsPackable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Built-in templates are embedded so the tool has no files to locate at run time. -->
+    <EmbeddedResource
+      Include="Templates\PolicyDefinition.scriban"
+      LogicalName="Templates/PolicyDefinition.scriban"
+    />
+    <EmbeddedResource
+      Include="Templates\PolicySetDefinition.scriban"
+      LogicalName="Templates/PolicySetDefinition.scriban"
+    />
+    <EmbeddedResource Include="Templates\Catalog.scriban" LogicalName="Templates/Catalog.scriban" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Scriban" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AzurePolicyDocs.Tests" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,70 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-and-test:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Check formatting
+        run: dotnet csharpier check .
+
+      - name: Restore
+        run: dotnet restore AzurePolicyDocs.sln
+
+      - name: Build
+        run: dotnet build AzurePolicyDocs.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test AzurePolicyDocs.sln --configuration Release --no-build --logger trx --results-directory ./TestResults
+
+      - name: Pack
+        run: dotnet pack AzurePolicyDocs.sln --configuration Release --no-build --output ./artifacts
+
+      - name: Smoke test the packed tool
+        shell: pwsh
+        run: |
+          dotnet tool install --global AzurePolicyDocs.Cli --add-source ./artifacts
+          policydocs generate ./samples/policyDefinitions/allowed-locations.json --stdout | Select-Object -First 5
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}
+          path: ./TestResults/
+
+      - name: Upload packages
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: ./artifacts/*.nupkg
