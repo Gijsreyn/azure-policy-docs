@@ -1,8 +1,8 @@
 <Project>
-  <!-- Ship the repository README as the NuGet package README for every packable project. -->
+  <!-- Each packable project ships its own README, selected by PackageId. -->
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
     <None
-      Include="$(MSBuildThisFileDirectory)README.md"
+      Include="$(MSBuildThisFileDirectory)docs/packages/$(PackageId)/README.md"
       Pack="true"
       PackagePath="\"
       Visible="false"

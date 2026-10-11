@@ -6,6 +6,7 @@ artifacts/
 
 ## NuGet
 packages/
+!docs/packages/
 *.nupkg
 *.snupkg
 
