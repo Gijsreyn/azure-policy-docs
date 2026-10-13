@@ -7,6 +7,8 @@
 [![NuGet CLI](https://img.shields.io/nuget/v/AzurePolicyDocs.Cli?label=NuGet%20CLI)](https://www.nuget.org/packages/AzurePolicyDocs.Cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+![Azure Policy Linter Demo](./docs/media/AzurePolicyDocsDemo.gif)
+
 `azurepolicydocs` is a .NET command-line tool that turns Azure Policy definition and policy set definition JSON into Markdown. It reads the same files you already keep in source control, including the `.jsonc` files that Enterprise Policy as Code (EPAC) uses, and renders them with a [Scriban](https://github.com/scriban/scriban) template. The built-in templates produce a page per policy with its effect, parameters, targeted resource types, remediation roles, and the full policy rule. Bring your own template when your repository needs a different layout.
 
 The command shape follows `bicep docs generate`: one file or a glob pattern in, Markdown beside the input or under an output directory out, custom values passed on the command line.
